@@ -1,0 +1,330 @@
+
+
+import tensorflow
+#import tflearn
+import numpy as np
+import random
+import tkinter as tk
+import xml.etree
+import urllib
+import urllib.request
+from bs4 import BeautifulSoup
+import re 
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+
+def cleanhtml(raw_html):
+      cleanr = re.compile('<.*?>')
+      cleantext = re.sub(cleanr, '', raw_html)
+      return cleantext
+preference = input(str('There are two modes TRAIN and TEST. In train mode you have the ability to help make the interface better, but the answers have to formatted as such input and response. If the mode is test then there is not need for such, but you as a user will not be helping the chatbot: '))
+
+if preference == 'TRAIN' or preference == 'TEST':
+    print('Your selected mode is', preference)
+else:
+    print('Sorry, but you have not selected one of the modes.')  
+
+movie_line_path = open('cornell/movie_lines.txt', encoding='utf-8', errors='ignore').read().split('/n')
+
+data = []
+for line in movie_line_path:
+    line.split('+++$+++')
+    line.lower()
+    data.append(line)
+    
+            
+data2 = []
+conversation_path = open('cornell/movie_conversations.txt', encoding='utf-8', errors='ignore').read().split('/n')
+
+for line2 in conversation_path:
+    line2.split('+++$+++')
+    line2.lower()
+    data2.append(line2)
+
+  
+root = tk.Tk()
+root.minsize(width=1238, height=921)
+root.maxsize(width=1238, height=921)
+background_image =tk.PhotoImage(file='backgrounda.gif')
+background_label = tk.Label(root, image=background_image)
+background_label.place(x=0, y=0, relwidth=1, relheight=1)
+root["bg"] = "white"
+root.title("ChitChat - Let's ChitChat")
+path = tk.PhotoImage(file='Logo.gif')
+root.tk.call('wm', 'iconphoto', root._w, path)
+scrollbar = tk.Scrollbar(root).pack(side = "right", fill = "y")
+
+
+enter = tk.Entry(root, bd="4", highlightcolor='black')
+enter.place(x=300, y=226)
+
+ut = tk.Text(enter, fg="black", font="{Lucida Sans} 20",bg='white', height=3, width=36)
+ut.pack()
+def print_user():
+    v = ut.get("1.0",'end-1c').lower()
+    save_data = open('Output.txt').read().split('+$+')
+    user_data = []
+    for s in save_data:
+        s.split('/n')
+        user_data.append(s)
+    
+
+    possible_outcomes = []
+
+    
+    possible_outcomes.append(v)
+    chatbot = ChatBot('Chatter Box', trainer = 'chatterbot.trainers.ChatterBotCorpusTrainer')
+    chatbot.train("chatterbot.corpus.english")
+    response = chatbot.get_response(v)
+    #twitter path
+    white_v = v.replace(' ','%20')
+
+    path = 'https://twitter.com/search?q=' + white_v + '&src=typd'
+    
+    if len(user_data) % 2 == 0:
+        pass
+    elif len(user_data) % 2 != 0:
+             
+        print('Delete element in data set')
+        print(len(user_data))
+    for it in possible_outcomes:
+        output_txt = open('Output.txt', 'a')
+        
+        output_txt.write(it)
+        output_txt.write('+$+')
+    
+    if v in user_data:
+        index = user_data.index(v)
+        if index % 2 == 0:
+
+            
+            out = index + 1
+            inout = int(out)
+            print(user_data[inout])
+            
+            
+                  
+        elif index % 2 != 0:
+            pass
+        else:
+            pass
+    elif v in data:
+        index23 = data.index(v)
+        if index23 % 2 == 0:
+            out23 = index23 + 1
+            print([data[out23]])
+        else:
+            pass
+    elif 'are' in v:
+        yes_no = ['yes', 'no']
+        random_yes_no = random.choice(yes_no)
+        print(random_yes_no)
+    elif '+' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('+')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint + secondint)
+        a_list.clear()
+
+    elif '-' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('-')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint - secondint)
+        a_list.clear()
+    elif '*' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('*')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint * secondint)
+        a_list.clear()
+    elif '%' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('%')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint / secondint)
+        a_list.clear()
+    elif ' x ' in v:
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split(' x ')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint * secondint)
+    elif '/' in v:
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('/')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint / secondint)
+    else:
+        white_v = v.replace(' ','%20')
+        path = 'https://twitter.com/search?q=' + white_v + '&src=typd'
+        with urllib.request.urlopen(str(path)) as url:
+            data_page = url.read()
+        soup = BeautifulSoup(data_page)
+        values = soup.findAll('p')
+
+        for final_value in values[0:1]:
+       
+            if final_value == '':
+                print(response)
+            else:
+                  #turned of by default 
+                 '''print(cleanhtml(str(final_value)))'''
+                  print(response)
+            
+def second_option():
+    v = ut.get("1.0",'end-1c').lower()
+    save_data = open('Output.txt').read().split('+$+')
+    user_data = []
+    for s2 in save_data:
+        s2.split('/n')
+        user_data.append(s2)
+    possible_outcomes = []
+    
+    possible_outcomes.append(v)
+    chatbot = ChatBot('Chatter Box')
+
+    response = chatbot.get_response(v)
+
+    if v in user_data:
+        index = user_data.index(v)
+        if index % 2 == 0:
+
+            
+            out = index + 1
+            inout = int(out)
+
+            print(user_data[inout])
+            
+            
+        elif index % 2 != 0:
+            pass
+        else:
+            pass
+    elif v in data:
+         index23 = data.index(v)
+         if index23 % 2 == 0:
+             out23 = index23 + 1
+             print([data[out23]])
+         else:
+             pass
+    elif 'are' in v:
+        yes_no = ['yes', 'no']
+        random_yes_no = random.choice(yes_no)
+        print(random_yes_no)
+    elif '+' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('+')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint + secondint)
+        a_list.clear()
+
+    elif '-' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('-')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint - secondint)
+        a_list.clear()
+    elif '*' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('*')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint * secondint)
+        a_list.clear()
+    elif '%' in v:
+        
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('%')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint / secondint)
+        a_list.clear()
+    elif ' x ' in v:
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split(' x ')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint * secondint)
+    elif '/' in v:
+        p = v.strip(' ')
+        a_list = []
+        for iterator in v:
+            split_v = v.split('/')
+        firstint = int(split_v[0])
+        secondint = int(split_v[1])
+        print(firstint / secondint)
+            
+    else:
+         #twitter path
+        white_v = v.replace(' ','%20')
+        path = 'https://twitter.com/search?q=' + white_v + '&src=typd'
+        with urllib.request.urlopen(str(path)) as url:
+            data_page = url.read()
+        soup = BeautifulSoup(data_page, "lxml")
+        values = soup.findAll('p')
+        
+        for final_value in values[0:1]:
+            if final_value == '':
+                
+                print(response)
+            else:
+                  #turned off print twitter value
+                  '''print(cleanhtml(str(final_value)))'''
+                  print(response)
+                 
+                           
+def third_option():
+    print("Re-run the code and this time pick one option")
+    root.destroy()
+
+button = tk.Button(root,text='Submit')
+if preference == 'TRAIN':
+    button.configure(command=lambda:print_user())
+elif preference == 'TEST':
+    button.configure(command=lambda:second_option())
+else:
+    button.configure(command=lambda:third_option())
+    
+button.pack()
+button.place(x=490, y=500)
+button.configure(font = '{Sans} 23',foreground = 'white', bg ='purple',height = 1, width=14)
+
+
+
